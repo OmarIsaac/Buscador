@@ -7,6 +7,7 @@ const puertas = document.querySelector("#puertas");
 const transmision = document.querySelector("#transmision");
 const color = document.querySelector("#color");
 
+// contenedor para los resultados
 const resultado = document.querySelector("#resultado");
 
 const max = new Date().getFullYear();
@@ -25,7 +26,7 @@ const datosBusqueda = {
 
 // Eventos
 document.addEventListener("DOMContentLoaded", () => {
-  mostrarAutos(); // Muestra los automoviles al cargar
+  mostrarAutos(autos); // Muestra los automoviles al cargar
 
   llenarSelect(); // llena las opciones de año
 });
@@ -33,10 +34,14 @@ document.addEventListener("DOMContentLoaded", () => {
 // Event listener para los select de busqueda
 marca.addEventListener("change", (e) => {
   datosBusqueda.marca = e.target.value;
+
+  filtrarAuto();
 });
 
 year.addEventListener("change", (e) => {
-  datosBusqueda.year = e.target.value;
+  datosBusqueda.year = parseInt(e.target.value);
+
+  filtrarAuto();
 });
 
 minimo.addEventListener("change", (e) => {
@@ -61,7 +66,9 @@ color.addEventListener("change", (e) => {
   console.log(datosBusqueda);
 });
 // Funciones
-function mostrarAutos() {
+function mostrarAutos(autos) {
+  limpiarHTML(); // limpia el html previo
+
   autos.forEach((auto) => {
     // se crea destructuring para mandar a llamar mas facil los objetos.
     const { marca, modelo, year, puertas, transmision, precio, color } = auto;
@@ -78,6 +85,13 @@ function mostrarAutos() {
   });
 }
 
+// Limpiar HTML
+function limpiarHTML() {
+  while (resultado.firstChild) {
+    resultado.removeChild(resultado.firstChild);
+  }
+}
+
 // Genera los años del Select
 function llenarSelect() {
   // const max = new Date().getFullYear();
@@ -88,4 +102,31 @@ function llenarSelect() {
     opcion.textContent = i; // representa el valor de i
     year.appendChild(opcion); // Agrega las opciones de año al select
   }
+}
+
+/**
+ * Estamos creando una funcion que manda a llamar a otra funccion
+ * En la funcion filtrarMarca
+ */
+function filtrarAuto() {
+  const resultado = autos.filter(filtrarMarca).filter(filtrarYear);
+
+  //console.log(resultado);
+  mostrarAutos(resultado);
+}
+
+function filtrarMarca(auto) {
+  const { marca } = datosBusqueda;
+  if (marca) {
+    return auto.marca === marca;
+  }
+  return auto;
+}
+
+function filtrarYear(auto) {
+  const { year } = datosBusqueda;
+  if (year) {
+    return auto.year === year;
+  }
+  return auto;
 }
